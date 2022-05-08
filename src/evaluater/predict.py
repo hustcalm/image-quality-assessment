@@ -50,15 +50,24 @@ def main(base_model_name, weights_file, image_source, predictions_file, img_form
     # get predictions
     predictions = predict(nima.nima_model, data_generator)
 
+    # average scores
+    average_score_prediction = 0.0
+    samples_num = 0
+
     # calc mean scores and add to samples
     for i, sample in enumerate(samples):
-        sample['mean_score_prediction'] = calc_mean_score(predictions[i])
+        cur_mean_score = calc_mean_score(predictions[i])
+        sample['mean_score_prediction'] = cur_mean_score
+        average_score_prediction += cur_mean_score
+        samples_num += 1
 
-    print(json.dumps(samples, indent=2))
+    #print(json.dumps(samples, indent=2))
 
     if predictions_file is not None:
         save_json(samples, predictions_file)
 
+    print('Average rendering quality:')
+    print('%f' % (average_score_prediction/samples_num))
 
 if __name__ == '__main__':
 
